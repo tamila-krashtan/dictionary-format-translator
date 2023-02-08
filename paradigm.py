@@ -98,10 +98,8 @@ class Paradigm:
             self.search_lemma.tag += 'F'
         elif 'n' in self.dict_lemma.tags:
             self.search_lemma.tag += 'N'
-        elif 'ns' in self.dict_lemma.tags:
-            self.search_lemma.tag += 'P'
         else:
-            self.search_lemma.tag += 'C'
+            self.search_lemma.tag += 'X'
 
         if 'p' in self.dict_lemma.tags:
             self.search_forms.append(SearchWord(self.search_lemma.word, tag='NP'))
