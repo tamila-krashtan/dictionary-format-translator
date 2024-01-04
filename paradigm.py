@@ -55,7 +55,7 @@ class Paradigm:
             case _:
                 raise Exception('Unknown POS tag: {}'.format(self.pos))
 
-    def save(self, paradigm_id, output_file):
+    def save_xml(self, paradigm_id, output_file):
         output_file.write('  <Paradigm pdgId="{}" lemma="{}" tag="{}"'
                           .format(paradigm_id, self.search_lemma.word, self.search_lemma.tag))
         if self.search_lemma.meaning:
@@ -74,6 +74,16 @@ class Paradigm:
             output_file.write('>{}</Form>\n'.format(search_form.word))
 
         output_file.write('    </Variant>\n  </Paradigm>\n')
+
+    def save_postgres(self, cursor):
+        cursor.execute('INSERT INTO lemmas (lemma, tags) VALUES (%s, %s) RETURNING id;',
+                       (self.search_lemma.word, self.search_lemma.tag))
+
+        lemma_id = cursor.fetchone()[0]
+
+        for form in self.search_forms:
+            cursor.execute('INSERT INTO forms (lemma_id, form, tags) VALUES (%s, %s, %s);',
+                           (lemma_id, form.word, form.tag))
 
     def translate_noun(self):
         self.search_lemma.tag = 'N'
